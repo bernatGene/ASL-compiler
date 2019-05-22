@@ -145,27 +145,65 @@ void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
   std::string     addr1 = getAddrDecor(ctx->left_expr());
   std::string     offs1 = getOffsetDecor(ctx->left_expr());
   instructionList code1 = getCodeDecor(ctx->left_expr());
-  //TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
+  TypesMgr::TypeId tid1 = getTypeDecor(ctx->left_expr());
   std::string     addr2 = getAddrDecor(ctx->expr());
   std::string     offs2 = getOffsetDecor(ctx->expr());
   instructionList code2 = getCodeDecor(ctx->expr());
-  //TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
-  bool o1 = (offs1 != "");
-  bool o2 = (offs2 != "");
-  code = code1 || code2;
-  if (not o1 and not o2) {
-  	code = code || instruction::LOAD(addr1, addr2);
+  TypesMgr::TypeId tid2 = getTypeDecor(ctx->expr());
+  /*
+  if (Types.isArrayTy(tid1) and Types.isArrayTy(tid2)) {
+    code = code1 || code2;
+    std::string iter = "%"+codeCounters.newTEMP();
+    std::string elem = "%"+codeCounters.newTEMP();
+    int size = Types.getArraySize(tid1);
+    for (int i = 0; i < size; ++i) {
+      code = code || instruction::ILOAD(iter, std::to_string(i))
+                  || instruction::LOADX(elem, addr2, iter)
+                  || instruction::XLOAD(addr1, iter, elem);
+    }
+  }*/
+  //Option 2: More compact (in t-code result terms): do a while loop
+  if (Types.isArrayTy(tid1) and Types.isArrayTy(tid2)) {
+    code = code1 || code2;
+    int sizeI = Types.getArraySize(tid1);
+    std::string iter = "%"+codeCounters.newTEMP();
+    std::string incr = "%"+codeCounters.newTEMP();
+    std::string elem = "%"+codeCounters.newTEMP();
+    std::string temp = "%"+codeCounters.newTEMP();
+    std::string size = "%"+codeCounters.newTEMP();
+    std::string label = codeCounters.newLabelWHILE();
+    std::string labelDo = "doACopy"+label;
+    std::string labelEn = "enACopy"+label;
+    instructionList iterCheck = instruction::LT(temp, iter, size) 
+                             || instruction::FJUMP(temp, labelEn);
+    instructionList elemAssgm = instruction::LOADX(elem, addr2, iter)
+                             || instruction::XLOAD(addr1, iter, elem);
+    instructionList iterIncre = instruction::ADD(iter, iter, incr);
+    code = code || instruction::ILOAD(iter, "0")
+                || instruction::ILOAD(incr, "1") 
+                || instruction::ILOAD(size, std::to_string(sizeI));
+    code = code || instruction::LABEL(labelDo);
+    code = code || iterCheck || elemAssgm || iterIncre;
+    code = code || instruction::UJUMP(labelDo) || instruction::LABEL(labelEn);
   }
-  else if (not o1 and o2) {
-  	code = code || instruction::LOADX(addr1, addr2, offs2);
-  }
-  else if (o1 and not o2) {
-  	code = code || instruction::XLOAD(addr1, offs1, addr2);	
-  }
-  else  {
-  	std::string temp = "%"+codeCounters.newTEMP();
-  	code = code || instruction::LOADX(temp, addr2, offs2);
-  	code = code || instruction::XLOAD(addr1, offs1, temp);			
+  else {
+    bool o1 = (offs1 != "");
+    bool o2 = (offs2 != "");
+    code = code1 || code2;
+    if (not o1 and not o2) {
+    	code = code || instruction::LOAD(addr1, addr2);
+    }
+    else if (not o1 and o2) {
+    	code = code || instruction::LOADX(addr1, addr2, offs2);
+    }
+    else if (o1 and not o2) {
+    	code = code || instruction::XLOAD(addr1, offs1, addr2);	
+    }
+    else  {
+    	std::string temp = "%"+codeCounters.newTEMP();
+    	code = code || instruction::LOADX(temp, addr2, offs2);
+    	code = code || instruction::XLOAD(addr1, offs1, temp);			
+    }
   }
   putCodeDecor(ctx, code);
   DEBUG_EXIT();

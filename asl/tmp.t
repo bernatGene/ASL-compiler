@@ -9,42 +9,52 @@ function f
   endvars
 
      %1 = v
-     c = %1
-     %2 = 'e'
-     writec %2
-     %2 = 'n'
-     writec %2
-     %2 = ' '
-     writec %2
-     %2 = 'f'
-     writec %2
-     %2 = '.'
-     writec %2
-     %2 = ' '
-     writec %2
-     %2 = 'c'
-     writec %2
-     %2 = ':'
-     writec %2
-     %2 = ' '
-     writec %2
-     %3 = 0
-     i = %3
-  label doWhile1 :
-     %4 = 10
-     %5 = i < %4
-     ifFalse %5 goto endWhile1
-     %6 = c[i]
-     writei %6
-     %8 = ' '
-     writec %8
-     %10 = 1
-     %11 = i + %10
-     i = %11
-     goto doWhile1
-  label endWhile1 :
-     %12 = '\n'
-     writec %12
+     %2 = 0
+     %3 = 1
+     %6 = 10
+  label doACopy1 :
+     %5 = %2 < %6
+     ifFalse %5 goto enACopy1
+     %4 = %1[%2]
+     c[%2] = %4
+     %2 = %2 + %3
+     goto doACopy1
+  label enACopy1 :
+     %7 = 'e'
+     writec %7
+     %7 = 'n'
+     writec %7
+     %7 = ' '
+     writec %7
+     %7 = 'f'
+     writec %7
+     %7 = '.'
+     writec %7
+     %7 = ' '
+     writec %7
+     %7 = 'c'
+     writec %7
+     %7 = ':'
+     writec %7
+     %7 = ' '
+     writec %7
+     %8 = 0
+     i = %8
+  label doWhile2 :
+     %9 = 10
+     %10 = i < %9
+     ifFalse %10 goto endWhile2
+     %11 = c[i]
+     writei %11
+     %13 = ' '
+     writec %13
+     %15 = 1
+     %16 = i + %15
+     i = %16
+     goto doWhile2
+  label endWhile2 :
+     %17 = '\n'
+     writec %17
      return
 endfunction
 
@@ -73,7 +83,17 @@ function g
      goto doWhile1
   label endWhile1 :
      %8 = v
-     %8 = d
+     %9 = 0
+     %10 = 1
+     %13 = 10
+  label doACopy2 :
+     %12 = %9 < %13
+     ifFalse %12 goto enACopy2
+     %11 = d[%9]
+     %8[%9] = %11
+     %9 = %9 + %10
+     goto doACopy2
+  label enACopy2 :
      return
 endfunction
 
@@ -99,239 +119,249 @@ function main
      i = %6
      goto doWhile1
   label endWhile1 :
-     b = a
-     %7 = 'd'
-     writec %7
-     %7 = 'e'
-     writec %7
-     %7 = 's'
-     writec %7
-     %7 = 'p'
-     writec %7
-     %7 = 'r'
-     writec %7
-     %7 = 'e'
-     writec %7
-     %7 = 's'
-     writec %7
-     %7 = ' '
-     writec %7
-     %7 = 'd'
-     writec %7
-     %7 = 'e'
-     writec %7
-     %7 = ' '
-     writec %7
-     %7 = 'b'
-     writec %7
-     %7 = '='
-     writec %7
-     %7 = 'a'
-     writec %7
-     %7 = '.'
-     writec %7
-     %7 = ' '
-     writec %7
-     %7 = 'b'
-     writec %7
-     %7 = ':'
-     writec %7
-     %7 = ' '
-     writec %7
-     %8 = 0
-     i = %8
-  label doWhile2 :
-     %9 = 10
-     %10 = i < %9
-     ifFalse %10 goto endWhile2
-     %11 = b[i]
-     writei %11
-     %13 = ' '
-     writec %13
-     %15 = 1
-     %16 = i + %15
-     i = %16
-     goto doWhile2
-  label endWhile2 :
-     %17 = '\n'
-     writec %17
-     %19 = 'd'
-     writec %19
-     %19 = 'e'
-     writec %19
-     %19 = 's'
-     writec %19
-     %19 = 'p'
-     writec %19
-     %19 = 'r'
-     writec %19
-     %19 = 'e'
-     writec %19
-     %19 = 's'
-     writec %19
-     %19 = ' '
-     writec %19
-     %19 = 'd'
-     writec %19
-     %19 = 'e'
-     writec %19
-     %19 = ' '
-     writec %19
-     %19 = 'b'
-     writec %19
-     %19 = '='
-     writec %19
-     %19 = 'a'
-     writec %19
-     %19 = '.'
-     writec %19
-     %19 = ' '
-     writec %19
-     %19 = 'a'
-     writec %19
-     %19 = ':'
-     writec %19
-     %19 = ' '
-     writec %19
-     %20 = 0
-     i = %20
+     %7 = 0
+     %8 = 1
+     %11 = 10
+  label doACopy2 :
+     %10 = %7 < %11
+     ifFalse %10 goto enACopy2
+     %9 = a[%7]
+     b[%7] = %9
+     %7 = %7 + %8
+     goto doACopy2
+  label enACopy2 :
+     %12 = 'd'
+     writec %12
+     %12 = 'e'
+     writec %12
+     %12 = 's'
+     writec %12
+     %12 = 'p'
+     writec %12
+     %12 = 'r'
+     writec %12
+     %12 = 'e'
+     writec %12
+     %12 = 's'
+     writec %12
+     %12 = ' '
+     writec %12
+     %12 = 'd'
+     writec %12
+     %12 = 'e'
+     writec %12
+     %12 = ' '
+     writec %12
+     %12 = 'b'
+     writec %12
+     %12 = '='
+     writec %12
+     %12 = 'a'
+     writec %12
+     %12 = '.'
+     writec %12
+     %12 = ' '
+     writec %12
+     %12 = 'b'
+     writec %12
+     %12 = ':'
+     writec %12
+     %12 = ' '
+     writec %12
+     %13 = 0
+     i = %13
   label doWhile3 :
-     %21 = 10
-     %22 = i < %21
-     ifFalse %22 goto endWhile3
-     %23 = a[i]
-     writei %23
-     %25 = ' '
-     writec %25
-     %27 = 1
-     %28 = i + %27
-     i = %28
+     %14 = 10
+     %15 = i < %14
+     ifFalse %15 goto endWhile3
+     %16 = b[i]
+     writei %16
+     %18 = ' '
+     writec %18
+     %20 = 1
+     %21 = i + %20
+     i = %21
      goto doWhile3
   label endWhile3 :
-     %29 = '\n'
-     writec %29
-     %31 = &a
-     pushparam %31
-     call f
-     popparam 
-     %32 = 'd'
-     writec %32
-     %32 = 'e'
-     writec %32
-     %32 = 's'
-     writec %32
-     %32 = 'p'
-     writec %32
-     %32 = 'r'
-     writec %32
-     %32 = 'e'
-     writec %32
-     %32 = 's'
-     writec %32
-     %32 = ' '
-     writec %32
-     %32 = 'd'
-     writec %32
-     %32 = 'e'
-     writec %32
-     %32 = ' '
-     writec %32
-     %32 = 'f'
-     writec %32
-     %32 = '('
-     writec %32
-     %32 = 'a'
-     writec %32
-     %32 = ')'
-     writec %32
-     %32 = '.'
-     writec %32
-     %32 = ' '
-     writec %32
-     %32 = 'a'
-     writec %32
-     %32 = ':'
-     writec %32
-     %32 = ' '
-     writec %32
-     %33 = 0
-     i = %33
+     %22 = '\n'
+     writec %22
+     %24 = 'd'
+     writec %24
+     %24 = 'e'
+     writec %24
+     %24 = 's'
+     writec %24
+     %24 = 'p'
+     writec %24
+     %24 = 'r'
+     writec %24
+     %24 = 'e'
+     writec %24
+     %24 = 's'
+     writec %24
+     %24 = ' '
+     writec %24
+     %24 = 'd'
+     writec %24
+     %24 = 'e'
+     writec %24
+     %24 = ' '
+     writec %24
+     %24 = 'b'
+     writec %24
+     %24 = '='
+     writec %24
+     %24 = 'a'
+     writec %24
+     %24 = '.'
+     writec %24
+     %24 = ' '
+     writec %24
+     %24 = 'a'
+     writec %24
+     %24 = ':'
+     writec %24
+     %24 = ' '
+     writec %24
+     %25 = 0
+     i = %25
   label doWhile4 :
-     %34 = 10
-     %35 = i < %34
-     ifFalse %35 goto endWhile4
-     %36 = a[i]
-     writei %36
-     %38 = ' '
-     writec %38
-     %40 = 1
-     %41 = i + %40
-     i = %41
+     %26 = 10
+     %27 = i < %26
+     ifFalse %27 goto endWhile4
+     %28 = a[i]
+     writei %28
+     %30 = ' '
+     writec %30
+     %32 = 1
+     %33 = i + %32
+     i = %33
      goto doWhile4
   label endWhile4 :
-     %42 = '\n'
-     writec %42
-     %44 = &a
-     pushparam %44
-     call g
+     %34 = '\n'
+     writec %34
+     %36 = &a
+     pushparam %36
+     call f
      popparam 
-     %45 = 'd'
-     writec %45
-     %45 = 'e'
-     writec %45
-     %45 = 's'
-     writec %45
-     %45 = 'p'
-     writec %45
-     %45 = 'r'
-     writec %45
-     %45 = 'e'
-     writec %45
-     %45 = 's'
-     writec %45
-     %45 = ' '
-     writec %45
-     %45 = 'd'
-     writec %45
-     %45 = 'e'
-     writec %45
-     %45 = ' '
-     writec %45
-     %45 = 'g'
-     writec %45
-     %45 = '('
-     writec %45
-     %45 = 'a'
-     writec %45
-     %45 = ')'
-     writec %45
-     %45 = '.'
-     writec %45
-     %45 = ' '
-     writec %45
-     %45 = 'a'
-     writec %45
-     %45 = ':'
-     writec %45
-     %45 = ' '
-     writec %45
-     %46 = 0
-     i = %46
+     %37 = 'd'
+     writec %37
+     %37 = 'e'
+     writec %37
+     %37 = 's'
+     writec %37
+     %37 = 'p'
+     writec %37
+     %37 = 'r'
+     writec %37
+     %37 = 'e'
+     writec %37
+     %37 = 's'
+     writec %37
+     %37 = ' '
+     writec %37
+     %37 = 'd'
+     writec %37
+     %37 = 'e'
+     writec %37
+     %37 = ' '
+     writec %37
+     %37 = 'f'
+     writec %37
+     %37 = '('
+     writec %37
+     %37 = 'a'
+     writec %37
+     %37 = ')'
+     writec %37
+     %37 = '.'
+     writec %37
+     %37 = ' '
+     writec %37
+     %37 = 'a'
+     writec %37
+     %37 = ':'
+     writec %37
+     %37 = ' '
+     writec %37
+     %38 = 0
+     i = %38
   label doWhile5 :
-     %47 = 10
-     %48 = i < %47
-     ifFalse %48 goto endWhile5
-     %49 = a[i]
-     writei %49
-     %51 = ' '
-     writec %51
-     %53 = 1
-     %54 = i + %53
-     i = %54
+     %39 = 10
+     %40 = i < %39
+     ifFalse %40 goto endWhile5
+     %41 = a[i]
+     writei %41
+     %43 = ' '
+     writec %43
+     %45 = 1
+     %46 = i + %45
+     i = %46
      goto doWhile5
   label endWhile5 :
-     %55 = '\n'
-     writec %55
+     %47 = '\n'
+     writec %47
+     %49 = &a
+     pushparam %49
+     call g
+     popparam 
+     %50 = 'd'
+     writec %50
+     %50 = 'e'
+     writec %50
+     %50 = 's'
+     writec %50
+     %50 = 'p'
+     writec %50
+     %50 = 'r'
+     writec %50
+     %50 = 'e'
+     writec %50
+     %50 = 's'
+     writec %50
+     %50 = ' '
+     writec %50
+     %50 = 'd'
+     writec %50
+     %50 = 'e'
+     writec %50
+     %50 = ' '
+     writec %50
+     %50 = 'g'
+     writec %50
+     %50 = '('
+     writec %50
+     %50 = 'a'
+     writec %50
+     %50 = ')'
+     writec %50
+     %50 = '.'
+     writec %50
+     %50 = ' '
+     writec %50
+     %50 = 'a'
+     writec %50
+     %50 = ':'
+     writec %50
+     %50 = ' '
+     writec %50
+     %51 = 0
+     i = %51
+  label doWhile6 :
+     %52 = 10
+     %53 = i < %52
+     ifFalse %53 goto endWhile6
+     %54 = a[i]
+     writei %54
+     %56 = ' '
+     writec %56
+     %58 = 1
+     %59 = i + %58
+     i = %59
+     goto doWhile6
+  label endWhile6 :
+     %60 = '\n'
+     writec %60
      return
 endfunction
 
