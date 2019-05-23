@@ -33,30 +33,30 @@ grammar Asl;
 //////////////////////////////////////////////////
 
 // A program is a list of functions
-program : function+ EOF
-        ;
+program 
+    : function+ EOF
+    ;
 
-// A function has a name, a list of parameters and a list of statements
 function
-        : FUNC ID '(' (parameters)? ')' (':' basictype)? declarations statements ENDFUNC
-        ;
+    : FUNC ID '(' (parameters)? ')' (':' basictype)? declarations statements ENDFUNC
+    ;
 
 parameters
-        : ID ':' type (',' ID ':' type)* 
-        ;
+    : ID ':' type (',' ID ':' type)* 
+    ;
 
 declarations
-        : (variable_decl)*
-        ;
+    : (variable_decl)*
+    ;
 
 variable_decl
-        : VAR ID (',' ID)* ':' type
-        ;
+    : VAR ID (',' ID)* ':' type
+    ;
 
 type    
 		: basictype 
 		| array
-        ;
+    ;
 
 basictype
 		: INT
@@ -78,27 +78,27 @@ call_parameters
     ;
 
 statements
-        : (statement)*
-        ;
+    : (statement)*
+    ;
 
 // The different types of instructions
 statement
           // Assignment
-        : left_expr ASSIGN expr ';'           # assignStmt
+        : left_expr ASSIGN expr ';'                              # assignStmt
           // if-then-else statement (else is optional)
         | IF expr THEN statements (ELSE statements)? ENDIF       # ifStmt
           // while statement
-        | WHILE expr DO statements EWHILE     #whileStmt
+        | WHILE expr DO statements EWHILE                        #whileStmt
           // A function/procedure call has a list of arguments in parenthesis (possibly empty)
-        | funcall ';'	                        # funCallStmt 
+        | funcall ';'	                                           # funCallStmt 
           // Read a variable
-        | READ left_expr ';'                  # readStmt
+        | READ left_expr ';'                                     # readStmt
           // Write an expression
-        | WRITE expr ';'                      # writeExpr
+        | WRITE expr ';'                                         # writeExpr
           // Write a string
-        | WRITE STRING ';'                    # writeString
+        | WRITE STRING ';'                                       # writeString
           //return statment
-        | RETURN (expr)? ';'                    # returnStmt
+        | RETURN (expr)? ';'                                     # returnStmt
         ;
 
 // Grammar for left expressions (l-values in C++)
@@ -110,19 +110,19 @@ left_expr
 // Grammar for expressions with boolean, relational and aritmetic operators
 expr  	
     : op=(NOT|PLUS|MINUS) expr			               	   # unary
-		| expr op=(MUL|DIV|MOD) expr 		               # arithmetic
-		| expr op=(PLUS|MINUS) expr 		               # arithmetic
+		| expr op=(MUL|DIV|MOD) expr 		                   # arithmetic
+		| expr op=(PLUS|MINUS) expr 		                   # arithmetic
 		| expr op=(EQUAL|DIFF|GRT|GRTE|LST|LSTE) expr  	   # relational
-		| expr op=AND expr					               # boolean
-		| expr op=OR 	expr					           # boolean
-		| '(' expr ')'						               # parenthesis
-		| INTVAL							               # value
-		| FLOATVAL							               # value
-		| BOOLVAL							               # value
-		| CHARVAL							               # value
-		| ident 							               # exprIdent
-		| array_access 						               # exprAAccess
-		| funcall 							               # exprFuncall
+		| expr op=AND expr					                       # boolean
+		| expr op=OR 	expr					                       # boolean
+		| '(' expr ')'						                         # parenthesis
+		| INTVAL							                             # value
+		| FLOATVAL							                           # value
+		| BOOLVAL							                             # value
+		| CHARVAL							                             # value
+		| ident 							                             # exprIdent
+		| array_access 						                         # exprAAccess
+		| funcall 							                           # exprFuncall
 		;
 
 array_access
@@ -148,12 +148,12 @@ MOD 	    : '%' ;
 
 EQUAL     : '==' ;
 DIFF   	  : '!=' ;
-GRT 	  : '>' ;
-GRTE	  : '>=' ;
+GRT 	    : '>' ;
+GRTE	    : '>=' ;
 LST       : '<' ;
-LSTE	  : '<=' ;
-NOT 	  : 'not' ;
-AND 	  : 'and' ;
+LSTE	    : '<=' ;
+NOT 	    : 'not' ;
+AND 	    : 'and' ;
 OR 	   	  : 'or'  ;
 
 VAR       : 'var';

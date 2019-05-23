@@ -69,6 +69,8 @@ void CodeGenListener::exitProgram(AslParser::ProgramContext *ctx) {
 void CodeGenListener::enterFunction(AslParser::FunctionContext *ctx) {
   DEBUG_ENTER();
   subroutine subr(ctx->ID()->getText());
+  //if at the exam functions can return something other than a basic type, the space to be pushed 
+  // should be equal to the return parameter size. Quite unlikely, though.
   if (ctx->basictype()) subr.add_param("_result");
   Code.add_subroutine(subr);
   SymTable::ScopeId sc = getScopeDecor(ctx);
@@ -113,7 +115,7 @@ void CodeGenListener::exitVariable_decl(AslParser::Variable_declContext *ctx) {
   std::size_t           size = Types.getSizeOfType(t1);
   int s = ctx->ID().size();
   for (int i=0; i < s; ++i) {
-    subrRef.add_var(ctx->ID()[i]->getText(), size);  
+    subrRef.add_var(ctx->ID(i)->getText(), size);  
   }  
   DEBUG_EXIT();
 }
@@ -162,7 +164,7 @@ void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
                   || instruction::XLOAD(addr1, iter, elem);
     }
   }*/
-  //Option 2: More compact (in t-code result terms): do a while loop
+  //Option 2: More compact (in resulting t-code terms): do a while loop
   if (Types.isArrayTy(tid1) and Types.isArrayTy(tid2)) {
     code = code1 || code2;
     int sizeI = Types.getArraySize(tid1);
@@ -194,15 +196,17 @@ void CodeGenListener::exitAssignStmt(AslParser::AssignStmtContext *ctx) {
     	code = code || instruction::LOAD(addr1, addr2);
     }
     else if (not o1 and o2) {
-    	code = code || instruction::LOADX(addr1, addr2, offs2);
+      //can't happen because right expressions are always already accessed
+    	//code = code || instruction::LOADX(addr1, addr2, offs2);
     }
     else if (o1 and not o2) {
     	code = code || instruction::XLOAD(addr1, offs1, addr2);	
     }
     else  {
-    	std::string temp = "%"+codeCounters.newTEMP();
-    	code = code || instruction::LOADX(temp, addr2, offs2);
-    	code = code || instruction::XLOAD(addr1, offs1, temp);			
+      //can't happen for same reason as previous
+    	//std::string temp = "%"+codeCounters.newTEMP();
+    	//code = code || instruction::LOADX(temp, addr2, offs2);
+    	//code = code || instruction::XLOAD(addr1, offs1, temp);			
     }
   }
   putCodeDecor(ctx, code);

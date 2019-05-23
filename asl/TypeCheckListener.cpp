@@ -195,13 +195,10 @@ void TypeCheckListener::enterReturnStmt(AslParser::ReturnStmtContext *ctx) {
 
 void TypeCheckListener::exitReturnStmt(AslParser::ReturnStmtContext *ctx) {
   TypesMgr::TypeId t = Symbols.getCurrentFunctionTy();
-  //std::cout<<Types.to_string(t)<<std::endl;
   if (not Types.isErrorTy(t)) {
     TypesMgr::TypeId rt = Types.getFuncReturnType(t);
     if (ctx-> expr()) {
       TypesMgr::TypeId et = getTypeDecor(ctx->expr());
-      //std::cout<<Types.to_string(et)<<std::endl;
-      //std::cout<<Types.to_string(rt)<<std::endl;
       if (not Types.copyableTypes(rt,et))
         Errors.incompatibleReturn(ctx->RETURN());
     }
@@ -373,7 +370,6 @@ void TypeCheckListener::exitArray_access(AslParser::Array_accessContext *ctx){
   if (not Types.isArrayTy(t)) {
     if (not Types.isErrorTy(t)) Errors.nonArrayInArrayAccess(ctx);
     tr = Types.createErrorTy();
-    //std::cout<<"error in array"<<std::endl;
   }
   else tr = Types.getArrayElemType(t);
   if (not Types.isIntegerTy(ta))
@@ -419,11 +415,10 @@ void TypeCheckListener::exitFuncall(AslParser::FuncallContext *ctx) {
   DEBUG_EXIT();
 }
 
-
-
 void TypeCheckListener::enterExprFuncall(AslParser::ExprFuncallContext *ctx) {
   DEBUG_ENTER();
 }
+
 void TypeCheckListener::exitExprFuncall(AslParser::ExprFuncallContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->funcall());
   TypesMgr::TypeId tf = getTypeDecor(ctx->funcall()->ident());

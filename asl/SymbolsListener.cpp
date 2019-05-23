@@ -118,10 +118,8 @@ void SymbolsListener::enterParameters(AslParser::ParametersContext *ctx) {
 }
 void SymbolsListener::exitParameters(AslParser::ParametersContext *ctx) {
   int s = ctx->ID().size();
-  //std::cout<<"ID vector size "<< s<<std::endl;
   for (int i = 0; i < s; ++i) {
     std::string ident = ctx->ID(i)->getText();
-    //std::cout<<"adding param "<< i <<" "<<ident<<std::endl;
     if (Symbols.findInCurrentScope(ident)) {
       Errors.declaredIdent(ctx->ID(i));
     }
@@ -130,10 +128,8 @@ void SymbolsListener::exitParameters(AslParser::ParametersContext *ctx) {
       Symbols.addParameter(ident, t);
     }    
   }
-  //std::cout<<"parameters added"<<std::endl;
   DEBUG_EXIT();
 }
-
 
 void SymbolsListener::enterDeclarations(AslParser::DeclarationsContext *ctx) {
   DEBUG_ENTER();
