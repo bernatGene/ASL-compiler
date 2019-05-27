@@ -1,0 +1,590 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Code Manager — CL Lab Project 2019 documentation</title>
+    <link rel="stylesheet" href="Code%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/sphinxdoc.css" type="text/css">
+    <link rel="stylesheet" href="Code%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/pygments.css" type="text/css">
+    <script type="text/javascript" src="Code%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/documentation_options.js"></script>
+    <script type="text/javascript" src="Code%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/jquery.js"></script>
+    <script type="text/javascript" src="Code%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/underscore.js"></script>
+    <script type="text/javascript" src="Code%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/doctools.js"></script>
+    <link rel="index" title="Index" href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html">
+    <link rel="search" title="Search" href="https://www.cs.upc.edu/~padro/CL/practica/search.html">
+    <link rel="next" title="Semantic Errors" href="https://www.cs.upc.edu/~padro/CL/practica/modules/semerrors.html">
+    <link rel="prev" title="Tree Decoration" href="https://www.cs.upc.edu/~padro/CL/practica/modules/decoration.html"> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html" title="General Index" accesskey="I">index</a></li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/semerrors.html" title="Semantic Errors" accesskey="N">next</a> |</li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/decoration.html" title="Tree Decoration" accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="https://www.cs.upc.edu/~padro/CL/practica/index.html">CL Lab Project 2019 documentation</a> »</li>
+          <li class="nav-item nav-item-1"><a href="https://www.cs.upc.edu/~padro/CL/practica/project.html" accesskey="U">Lab Project of Compilers - FIB UPC, 2019</a> »</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="https://www.cs.upc.edu/~padro/CL/practica/modules/decoration.html" title="previous chapter">Tree Decoration</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="https://www.cs.upc.edu/~padro/CL/practica/modules/semerrors.html" title="next chapter">Semantic Errors</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="https://www.cs.upc.edu/~padro/CL/practica/_sources/modules/code.rst.txt" rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q">
+      <input type="submit" value="Go">
+      <input type="hidden" name="check_keywords" value="yes">
+      <input type="hidden" name="area" value="default">
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="code-manager">
+<h1>Code Manager<a class="headerlink" href="#code-manager" title="Permalink to this headline">¶</a></h1>
+<p>When generating code, our compiler will need to handle pieces of code
+ created by different subtrees and combine them together to create more 
+code (e.g. to create code for a <em>while</em>, the compiler will need 
+to combine the code to compute the expression and the code of the 
+instruction inside the loop with the right labels and jump 
+instructions).</p>
+<p>The Code Manager module provides a class <code class="docutils literal notranslate"><span class="pre">code</span></code>
+ that can be used to handle this code combinations, and finally write it
+ to the output file when it is complete. Objects of type <code class="docutils literal notranslate"><span class="pre">code</span></code> contain <code class="docutils literal notranslate"><span class="pre">subroutine</span></code> objects, which contain <code class="docutils literal notranslate"><span class="pre">instructionList</span></code> objects, which in turn contain <code class="docutils literal notranslate"><span class="pre">instruction</span></code> objects.</p>
+<p>All these classes have methods to extend and combine them (e.g. add a <code class="docutils literal notranslate"><span class="pre">subroutine</span></code> to a <code class="docutils literal notranslate"><span class="pre">code</span></code>, or add an <code class="docutils literal notranslate"><span class="pre">instruction</span></code> to an <code class="docutils literal notranslate"><span class="pre">instructionList</span></code>, concatenate two <code class="docutils literal notranslate"><span class="pre">instructionList</span></code> objects, etc.)</p>
+<p>Additionally, this module contains also a static class <code class="docutils literal notranslate"><span class="pre">counters</span></code> that manages counters to generate labels for jumps in <em>if</em> and <em>while</em> instructions, and well as for temporal registers.</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre>  1
+  2
+  3
+  4
+  5
+  6
+  7
+  8
+  9
+ 10
+ 11
+ 12
+ 13
+ 14
+ 15
+ 16
+ 17
+ 18
+ 19
+ 20
+ 21
+ 22
+ 23
+ 24
+ 25
+ 26
+ 27
+ 28
+ 29
+ 30
+ 31
+ 32
+ 33
+ 34
+ 35
+ 36
+ 37
+ 38
+ 39
+ 40
+ 41
+ 42
+ 43
+ 44
+ 45
+ 46
+ 47
+ 48
+ 49
+ 50
+ 51
+ 52
+ 53
+ 54
+ 55
+ 56
+ 57
+ 58
+ 59
+ 60
+ 61
+ 62
+ 63
+ 64
+ 65
+ 66
+ 67
+ 68
+ 69
+ 70
+ 71
+ 72
+ 73
+ 74
+ 75
+ 76
+ 77
+ 78
+ 79
+ 80
+ 81
+ 82
+ 83
+ 84
+ 85
+ 86
+ 87
+ 88
+ 89
+ 90
+ 91
+ 92
+ 93
+ 94
+ 95
+ 96
+ 97
+ 98
+ 99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242
+243
+244</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">/// predeclaration</span>
+<span class="k">class</span> <span class="nc">instructionList</span><span class="p">;</span>
+
+<span class="c1">////////////////////////////////////////////////////////////////////</span>
+<span class="c1">/// Class instruction stores a VM instruction code with its operands</span>
+
+<span class="k">class</span> <span class="nc">instruction</span> <span class="p">{</span>
+
+ <span class="k">public</span><span class="o">:</span>
+  <span class="c1">/// instruction codes</span>
+  <span class="k">typedef</span> <span class="k">enum</span> <span class="p">{</span><span class="n">_LABEL</span><span class="p">,</span> <span class="n">_UJUMP</span><span class="p">,</span> <span class="n">_FJUMP</span><span class="p">,</span> <span class="n">_PUSH</span><span class="p">,</span> <span class="n">_POP</span><span class="p">,</span> <span class="n">_CALL</span><span class="p">,</span> <span class="n">_RETURN</span><span class="p">,</span>
+                <span class="n">_ADD</span><span class="p">,</span> <span class="n">_SUB</span><span class="p">,</span> <span class="n">_MUL</span><span class="p">,</span> <span class="n">_DIV</span><span class="p">,</span> <span class="n">_EQ</span><span class="p">,</span> <span class="n">_LT</span><span class="p">,</span> <span class="n">_LE</span><span class="p">,</span> <span class="n">_NEG</span><span class="p">,</span> <span class="n">_NOT</span><span class="p">,</span> <span class="n">_AND</span><span class="p">,</span> <span class="n">_OR</span><span class="p">,</span> <span class="n">_FLOAT</span><span class="p">,</span>
+                <span class="n">_FADD</span><span class="p">,</span> <span class="n">_FSUB</span><span class="p">,</span> <span class="n">_FMUL</span><span class="p">,</span> <span class="n">_FDIV</span><span class="p">,</span> <span class="n">_FEQ</span><span class="p">,</span> <span class="n">_FLT</span><span class="p">,</span> <span class="n">_FLE</span><span class="p">,</span> <span class="n">_FNEG</span><span class="p">,</span>
+                <span class="n">_LOAD</span><span class="p">,</span> <span class="n">_ILOAD</span><span class="p">,</span> <span class="n">_CHLOAD</span><span class="p">,</span> <span class="n">_FLOAD</span><span class="p">,</span> <span class="n">_XLOAD</span><span class="p">,</span> <span class="n">_LOADX</span><span class="p">,</span> <span class="n">_ALOAD</span><span class="p">,</span> <span class="n">_LOADC</span><span class="p">,</span> <span class="n">_CLOAD</span><span class="p">,</span>
+                <span class="n">_READI</span><span class="p">,</span> <span class="n">_READF</span><span class="p">,</span> <span class="n">_READC</span><span class="p">,</span> <span class="n">_WRITEI</span><span class="p">,</span> <span class="n">_WRITEF</span><span class="p">,</span> <span class="n">_WRITEC</span><span class="p">,</span> <span class="n">_WRITELN</span><span class="p">,</span> <span class="n">_NOOP</span><span class="p">,</span> <span class="n">_INVALID</span><span class="p">}</span> <span class="n">Operation</span><span class="p">;</span>
+  
+  <span class="c1">/// instruction code</span>
+  <span class="n">Operation</span> <span class="n">oper</span><span class="p">;</span>
+  <span class="c1">/// arguments</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">arg1</span><span class="p">,</span> <span class="n">arg2</span><span class="p">,</span> <span class="n">arg3</span><span class="p">;</span>
+  
+  <span class="c1">/// constructor</span>
+  <span class="n">instruction</span><span class="p">(</span><span class="n">Operation</span> <span class="n">op</span><span class="p">,</span>
+              <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="o">=</span><span class="s">""</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="o">=</span><span class="s">""</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="o">=</span><span class="s">""</span><span class="p">);</span>
+
+  <span class="c1">/// destructor</span>
+  <span class="o">~</span><span class="n">instruction</span><span class="p">();</span>
+
+  <span class="c1">// concatenation of instruction+list (or instruction+instruction, via automatic coertion)</span>
+  <span class="n">instructionList</span> <span class="k">operator</span><span class="o">||</span><span class="p">(</span><span class="k">const</span> <span class="n">instructionList</span> <span class="o">&amp;</span><span class="n">lst</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">/// ------ specific constructors for each instruction -------</span>
+
+  <span class="c1">// create new instruction "a1 :"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">LABEL</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "goto a1"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">UJUMP</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "ifFalse a1 goto a2"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FJUMP</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "pushparam a1"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">PUSH</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="o">=</span><span class="s">""</span><span class="p">);</span>
+  <span class="c1">// create new instruction "popparam a1"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">POP</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="o">=</span><span class="s">""</span><span class="p">);</span>
+  <span class="c1">// create new instruction "call a1"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">CALL</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "return"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">RETURN</span><span class="p">();</span>
+  <span class="c1">// create new instruction "a1 = a2 + a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">ADD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 - a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">SUB</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 * a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">MUL</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 / a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">DIV</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 == a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">EQ</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 &lt; a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">LT</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 &lt;= a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">LE</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 and a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">AND</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 or a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">OR</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 +. a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FADD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 -. a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FSUB</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 *. a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FMUL</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 /. a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FDIV</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 ==. a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FEQ</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 &lt;. a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FLT</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2 &lt;=. a3"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FLE</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = not a2"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">NOT</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = - a2"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">NEG</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = -. a2"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FNEG</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = float a2"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FLOAT</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>  
+  <span class="c1">// create new instruction "a1 = a2"</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">LOAD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2" (where a2 is an integer constant)</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">ILOAD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2" (where a2 is a character constant)</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">CHLOAD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2" (where a2 is a float constant)</span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">FLOAD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1[a2] = a3" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">XLOAD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = a2[a3]" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">LOADX</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a3</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = &amp;a2" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">ALOAD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "a1 = *a2" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">LOADC</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "*a1 = a2" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">CLOAD</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a2</span><span class="p">);</span>
+  <span class="c1">// create new instruction "readi a1" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">READI</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "readf a1" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">READF</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "readc a1" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">READC</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "writei a1" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">WRITEI</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span> 
+  <span class="c1">// create new instruction "writef a1" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">WRITEF</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "writec a1" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">WRITEC</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">a1</span><span class="p">);</span>
+  <span class="c1">// create new instruction "writeln" </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">WRITELN</span><span class="p">();</span>
+  <span class="c1">// create new instruction "noop" (not really needed) </span>
+  <span class="k">static</span> <span class="n">instruction</span> <span class="nf">NOOP</span><span class="p">();</span>
+  
+  <span class="c1">// print instruction</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dump</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>   
+<span class="p">};</span>
+
+<span class="c1">////////////////////////////////////////////////////////////////////</span>
+<span class="c1">/// Class instructionList stores a list of instructions</span>
+
+<span class="k">class</span> <span class="nc">instructionList</span> <span class="o">:</span> <span class="k">public</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">instruction</span><span class="o">&gt;</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+   <span class="c1">// constructor</span>
+   <span class="n">instructionList</span><span class="p">();</span>
+   <span class="c1">// constructor from a single instruction</span>
+   <span class="n">instructionList</span><span class="p">(</span><span class="k">const</span> <span class="n">instruction</span> <span class="o">&amp;</span><span class="p">);</span>
+   <span class="c1">// destructor</span>
+   <span class="o">~</span><span class="n">instructionList</span><span class="p">();</span>
+
+   <span class="c1">// concatenation of lists (or list+instruction, via automatic coertion)</span>
+   <span class="n">instructionList</span> <span class="k">operator</span><span class="o">||</span><span class="p">(</span><span class="k">const</span> <span class="n">instructionList</span> <span class="o">&amp;</span><span class="n">lst</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+   <span class="c1">// print instructionList</span>
+   <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dump</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>   
+<span class="p">};</span>
+
+
+
+<span class="c1">////////////////////////////////////////////////////////////////////</span>
+<span class="c1">/// Class var stores a variable name and size</span>
+
+<span class="k">class</span> <span class="nc">var</span> <span class="p">{</span>
+ <span class="k">public</span><span class="o">:</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+  <span class="kt">size_t</span> <span class="n">size</span><span class="p">;</span>
+
+  <span class="n">var</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">n</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">s</span><span class="p">);</span>
+  <span class="o">~</span><span class="n">var</span><span class="p">();</span>
+
+  <span class="c1">// print var</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dump</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span> 
+<span class="p">};</span>
+
+<span class="c1">////////////////////////////////////////////////////////////////////</span>
+<span class="c1">/// Class subroutine stores information about a subroutine (local</span>
+<span class="c1">/// vars, parametres, instructions, declared/used labels...)</span>
+
+<span class="k">class</span> <span class="nc">subroutine</span> <span class="p">{</span>
+
+ <span class="k">public</span><span class="o">:</span>
+  <span class="c1">/// list of local variables</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">var</span><span class="o">&gt;</span> <span class="n">vars</span><span class="p">;</span>
+  <span class="c1">/// list of params</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="o">&lt;</span><span class="n">var</span><span class="o">&gt;</span> <span class="n">params</span><span class="p">;</span>  
+
+  <span class="c1">/// constructor and destructor</span>
+  <span class="n">subroutine</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">sname</span><span class="p">);</span>
+  <span class="o">~</span><span class="n">subroutine</span><span class="p">();</span>
+
+  <span class="c1">/// get subroutine name</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">get_name</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+  <span class="c1">/// add a local var to subroutine</span>
+  <span class="kt">void</span> <span class="nf">add_var</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">,</span> <span class="kt">size_t</span> <span class="n">sz</span><span class="p">);</span>
+  <span class="c1">/// add a parameter (size is always 1)</span>
+  <span class="kt">void</span> <span class="nf">add_param</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">);</span>
+  <span class="c1">/// add an instruction</span>
+  <span class="kt">void</span> <span class="nf">add_instruction</span><span class="p">(</span><span class="k">const</span> <span class="n">instruction</span> <span class="o">&amp;</span><span class="n">inst</span><span class="p">);</span>
+  <span class="c1">/// add instruction list to current instructions</span>
+  <span class="kt">void</span> <span class="nf">add_instructions</span><span class="p">(</span><span class="k">const</span> <span class="n">instructionList</span> <span class="o">&amp;</span><span class="n">lins</span><span class="p">);</span>
+  <span class="c1">/// set instruction list (overwritting current instructions)</span>
+  <span class="kt">void</span> <span class="nf">set_instructions</span><span class="p">(</span><span class="k">const</span> <span class="n">instructionList</span> <span class="o">&amp;</span><span class="n">lins</span><span class="p">);</span>
+  
+  <span class="c1">/// get instruction at given program counter in subroutine</span>
+  <span class="n">instruction</span> <span class="nf">get_instruction_at</span><span class="p">(</span><span class="kt">size_t</span> <span class="n">pc</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="c1">/// get program counter in subroutine for given label</span>
+  <span class="kt">size_t</span> <span class="nf">get_label_pc</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">lab</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// print subroutine (params, vars, and instructions)</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dump</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">////////////////////////////////////////////////////////////////////</span>
+<span class="c1">/// Class code stores a whole program (main plus subroutines)</span>
+
+<span class="k">class</span> <span class="nc">code</span> <span class="p">{</span>
+  
+ <span class="k">public</span><span class="o">:</span>
+  <span class="c1">/// constructor and destructor</span>
+  <span class="n">code</span><span class="p">();</span>
+  <span class="o">~</span><span class="n">code</span><span class="p">();</span>
+
+  <span class="c1">/// get most recently added subroutine (i.e. the one currently being processed)</span>
+  <span class="n">subroutine</span><span class="o">&amp;</span> <span class="n">get_last_subroutine</span><span class="p">();</span>
+  <span class="c1">/// get subroutine by name</span>
+  <span class="k">const</span> <span class="n">subroutine</span><span class="o">&amp;</span> <span class="n">get_subroutine</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">name</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="c1">/// add new subroutine</span>
+  <span class="kt">void</span> <span class="nf">add_subroutine</span><span class="p">(</span><span class="k">const</span> <span class="n">subroutine</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">);</span>
+
+  <span class="c1">// print code (all info for all subroutines)</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">dump</span><span class="p">()</span> <span class="k">const</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="c1">////////////////////////////////////////////////////////////////////</span>
+<span class="c1">/// Class counters manages temporal and labels counters</span>
+
+<span class="k">class</span> <span class="nc">counters</span> <span class="p">{</span>
+  
+ <span class="k">public</span><span class="o">:</span>
+   <span class="c1">// return id for new label or temp (id is a number, but returned as string</span>
+   <span class="c1">// to ease concatenation with other literals (e.g. "labelIF" + "4" -&gt; "LabelIF4")</span>
+   <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">newLabelIF</span><span class="p">();</span>
+   <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">newLabelWHILE</span><span class="p">();</span>
+   <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">newTEMP</span><span class="p">();</span>
+
+   <span class="c1">// reset individual counters </span>
+   <span class="k">static</span> <span class="kt">void</span> <span class="nf">resetLabelIF</span><span class="p">();</span>
+   <span class="k">static</span> <span class="kt">void</span> <span class="nf">resetLabelWHILE</span><span class="p">();</span>
+   <span class="k">static</span> <span class="kt">void</span> <span class="nf">resetTEMP</span><span class="p">();</span>
+
+   <span class="c1">// reset label counters (IF and WHILE)</span>
+   <span class="k">static</span> <span class="kt">void</span> <span class="nf">resetLabels</span><span class="p">();</span>
+   <span class="c1">// reset all counters (IF, WHILE, and TEMP)</span>
+   <span class="k">static</span> <span class="kt">void</span> <span class="nf">reset</span><span class="p">();</span>
+<span class="p">};</span>
+</pre></div>
+</td></tr></tbody></table></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html" title="General Index">index</a></li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/semerrors.html" title="Semantic Errors">next</a> |</li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/decoration.html" title="Tree Decoration">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="https://www.cs.upc.edu/~padro/CL/practica/index.html">CL Lab Project 2019 documentation</a> »</li>
+          <li class="nav-item nav-item-1"><a href="https://www.cs.upc.edu/~padro/CL/practica/project.html">Lab Project of Compilers - FIB UPC, 2019</a> »</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        © Copyright 2018-2022, Compilers. FIB, UPC..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.
+    </div>
+  
+</body></html>

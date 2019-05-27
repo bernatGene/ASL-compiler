@@ -1,0 +1,261 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Type Manager — CL Lab Project 2019 documentation</title>
+    <link rel="stylesheet" href="Type%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/sphinxdoc.css" type="text/css">
+    <link rel="stylesheet" href="Type%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/pygments.css" type="text/css">
+    <script type="text/javascript" src="Type%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/documentation_options.js"></script>
+    <script type="text/javascript" src="Type%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/jquery.js"></script>
+    <script type="text/javascript" src="Type%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/underscore.js"></script>
+    <script type="text/javascript" src="Type%20Manager%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/doctools.js"></script>
+    <link rel="index" title="Index" href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html">
+    <link rel="search" title="Search" href="https://www.cs.upc.edu/~padro/CL/practica/search.html">
+    <link rel="next" title="SymbolTable" href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html">
+    <link rel="prev" title="ASL Modules" href="https://www.cs.upc.edu/~padro/CL/practica/modules.html"> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html" title="General Index" accesskey="I">index</a></li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html" title="SymbolTable" accesskey="N">next</a> |</li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules.html" title="ASL Modules" accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="https://www.cs.upc.edu/~padro/CL/practica/index.html">CL Lab Project 2019 documentation</a> »</li>
+          <li class="nav-item nav-item-1"><a href="https://www.cs.upc.edu/~padro/CL/practica/project.html" accesskey="U">Lab Project of Compilers - FIB UPC, 2019</a> »</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="https://www.cs.upc.edu/~padro/CL/practica/modules.html" title="previous chapter">ASL Modules</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html" title="next chapter">SymbolTable</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="https://www.cs.upc.edu/~padro/CL/practica/_sources/modules/typemanager.rst.txt" rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q">
+      <input type="submit" value="Go">
+      <input type="hidden" name="check_keywords" value="yes">
+      <input type="hidden" name="area" value="default">
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="type-manager">
+<h1>Type Manager<a class="headerlink" href="#type-manager" title="Permalink to this headline">¶</a></h1>
+<p>This class stores information about all types existing in a program. A <em>type</em> stores
+information required to perform type checking.</p>
+<p>Note that this includes not only primitive types, but programmer-defined types such as <em>array of 10 integers</em>
+or <em>function that receives a boolean and an array of 5 char and returns an integer</em>.</p>
+<p>Thus, class <code class="docutils literal notranslate"><span class="pre">TypesMgr</span></code> class stores all seen types, and offers methods to find out information about them
+when we are type checking or generating code. For instance:</p>
+<blockquote>
+<div><ul class="simple">
+<li><em>is type X an array?</em></li>
+<li><em>is type X the same than type Y?</em></li>
+<li><em>is type X compatible with type Y?</em></li>
+<li><em>which type have the elements of type X?</em> (when <em>X</em> is an array type, obviously)</li>
+<li><em>which type returns type X?</em> (when <em>X</em> is a function type, obviously)</li>
+</ul>
+</div></blockquote>
+<p>Here is the whole definition of <code class="docutils literal notranslate"><span class="pre">TypesMgr</span></code>. Check the comments to find out what each method does.</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">////////////////////////////////////////////////////////////////</span>
+<span class="c1">// Class TypesMgr: creates and stores types, and give access</span>
+<span class="c1">// to type information.</span>
+<span class="c1">// When a type is created the TypesMgr returns its TypeId.</span>
+<span class="c1">// The TypeId is the public way to work with types.</span>
+<span class="c1">// This TypeMgr works with five kinds of primitive types:</span>
+<span class="c1">// integer, float, boolean, character and void. Also it</span>
+<span class="c1">// recognizes two compound types: functions and fixed-size</span>
+<span class="c1">// arrays. Finally there exist a special type 'error'.</span>
+
+<span class="k">class</span> <span class="nc">TypesMgr</span> <span class="p">{</span>
+
+<span class="k">public</span><span class="o">:</span>
+
+  <span class="c1">// The TypeId is an index in a vector</span>
+  <span class="k">typedef</span> <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">TypeId</span><span class="p">;</span>
+
+  <span class="c1">// Constructor</span>
+  <span class="n">TypesMgr</span> <span class="p">();</span>
+
+  <span class="c1">// Methods to create a Type and return its TypeId</span>
+  <span class="c1">//   - Primitive and error types</span>
+  <span class="n">TypeId</span> <span class="nf">createErrorTy</span>     <span class="p">();</span>
+  <span class="n">TypeId</span> <span class="nf">createIntegerTy</span>   <span class="p">();</span>
+  <span class="n">TypeId</span> <span class="nf">createFloatTy</span>     <span class="p">();</span>
+  <span class="n">TypeId</span> <span class="nf">createBooleanTy</span>   <span class="p">();</span>
+  <span class="n">TypeId</span> <span class="nf">createCharacterTy</span> <span class="p">();</span>
+  <span class="n">TypeId</span> <span class="nf">createVoidTy</span>      <span class="p">();</span>
+  <span class="c1">//   - Compound types</span>
+  <span class="n">TypeId</span> <span class="nf">createFunctionTy</span>  <span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TypeId</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">paramsTypes</span><span class="p">,</span>
+			    <span class="n">TypeId</span>                      <span class="n">returnType</span><span class="p">);</span>
+  <span class="n">TypeId</span> <span class="nf">createArrayTy</span>     <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">int</span>                <span class="n">size</span><span class="p">,</span>
+		            <span class="n">TypeId</span>                      <span class="n">elemType</span><span class="p">);</span>
+
+  <span class="c1">// Accessors to work with primitive and error types</span>
+  <span class="kt">bool</span> <span class="nf">isErrorTy</span>            <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isIntegerTy</span>          <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isFloatTy</span>            <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isBooleanTy</span>          <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isCharacterTy</span>        <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isVoidTy</span>             <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isNumericTy</span>          <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isPrimitiveTy</span>        <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span> <span class="nf">isPrimitiveNonVoidTy</span> <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Accessors to work with function types</span>
+  <span class="kt">bool</span>                        <span class="nf">isFunctionTy</span>       <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span>     <span class="k">const</span><span class="p">;</span>
+  <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">TypeId</span><span class="o">&gt;</span> <span class="o">&amp;</span> <span class="n">getFuncParamsTypes</span> <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span>     <span class="k">const</span><span class="p">;</span>
+  <span class="n">TypeId</span>                      <span class="nf">getFuncReturnType</span>  <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span>     <span class="k">const</span><span class="p">;</span>
+  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span>                 <span class="n">getNumOfParameters</span> <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span>     <span class="k">const</span><span class="p">;</span>
+  <span class="n">TypeId</span>                      <span class="nf">getParameterType</span>   <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">,</span>
+					          <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">i</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">bool</span>                        <span class="nf">isVoidFunction</span>     <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span>     <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Accessors to work with array types</span>
+  <span class="kt">bool</span>         <span class="nf">isArrayTy</span>        <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nf">getArraySize</span>     <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+  <span class="n">TypeId</span>       <span class="nf">getArrayElemType</span> <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Methods to check different compatibilities of types</span>
+  <span class="c1">//   - structurally equal?</span>
+  <span class="kt">bool</span> <span class="nf">equalTypes</span>      <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid1</span><span class="p">,</span> <span class="n">TypeId</span> <span class="n">tid2</span><span class="p">)</span>     <span class="k">const</span><span class="p">;</span>
+  <span class="c1">//   - comparable with the relational operator op?</span>
+  <span class="kt">bool</span> <span class="nf">comparableTypes</span> <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid1</span><span class="p">,</span> <span class="n">TypeId</span> <span class="n">tid2</span><span class="p">,</span>
+			<span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">op</span><span class="p">)</span>       <span class="k">const</span><span class="p">;</span>
+  <span class="c1">//   - tidFrom values can be copied to tidTo?</span>
+  <span class="kt">bool</span> <span class="nf">copyableTypes</span>   <span class="p">(</span><span class="n">TypeId</span> <span class="n">tidTo</span><span class="p">,</span> <span class="n">TypeId</span> <span class="n">tidFrom</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Method to compute the size of a type (primitive type size = 1)</span>
+  <span class="n">std</span><span class="o">::</span><span class="kt">size_t</span> <span class="n">getSizeOfType</span> <span class="p">(</span><span class="n">TypeId</span> <span class="n">tid</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+  <span class="c1">// Methods to convert to string and print types</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">to_string</span> <span class="p">(</span><span class="n">TypeId</span>         <span class="n">tid</span><span class="p">)</span>            <span class="k">const</span><span class="p">;</span>
+  <span class="kt">void</span>        <span class="nf">dump</span>      <span class="p">(</span><span class="n">TypeId</span>         <span class="n">tid</span><span class="p">,</span>
+		         <span class="n">std</span><span class="o">::</span><span class="n">ostream</span> <span class="o">&amp;</span> <span class="n">os</span> <span class="o">=</span> <span class="n">std</span><span class="o">::</span><span class="n">cout</span><span class="p">)</span> <span class="k">const</span><span class="p">;</span>
+
+<span class="p">};</span>  <span class="c1">// class TypesMgr</span>
+</pre></div>
+</td></tr></tbody></table></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html" title="General Index">index</a></li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html" title="SymbolTable">next</a> |</li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules.html" title="ASL Modules">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="https://www.cs.upc.edu/~padro/CL/practica/index.html">CL Lab Project 2019 documentation</a> »</li>
+          <li class="nav-item nav-item-1"><a href="https://www.cs.upc.edu/~padro/CL/practica/project.html">Lab Project of Compilers - FIB UPC, 2019</a> »</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        © Copyright 2018-2022, Compilers. FIB, UPC..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.
+    </div>
+  
+</body></html>

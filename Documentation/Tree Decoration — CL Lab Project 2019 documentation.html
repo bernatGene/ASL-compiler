@@ -1,0 +1,209 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+        <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Tree Decoration — CL Lab Project 2019 documentation</title>
+    <link rel="stylesheet" href="Tree%20Decoration%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/sphinxdoc.css" type="text/css">
+    <link rel="stylesheet" href="Tree%20Decoration%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/pygments.css" type="text/css">
+    <script type="text/javascript" src="Tree%20Decoration%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/documentation_options.js"></script>
+    <script type="text/javascript" src="Tree%20Decoration%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/jquery.js"></script>
+    <script type="text/javascript" src="Tree%20Decoration%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/underscore.js"></script>
+    <script type="text/javascript" src="Tree%20Decoration%20%E2%80%94%20CL%20Lab%20Project%202019%20documentation_files/doctools.js"></script>
+    <link rel="index" title="Index" href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html">
+    <link rel="search" title="Search" href="https://www.cs.upc.edu/~padro/CL/practica/search.html">
+    <link rel="next" title="Code Manager" href="https://www.cs.upc.edu/~padro/CL/practica/modules/code.html">
+    <link rel="prev" title="SymbolTable" href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html"> 
+  </head><body>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html" title="General Index" accesskey="I">index</a></li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/code.html" title="Code Manager" accesskey="N">next</a> |</li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html" title="SymbolTable" accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="https://www.cs.upc.edu/~padro/CL/practica/index.html">CL Lab Project 2019 documentation</a> »</li>
+          <li class="nav-item nav-item-1"><a href="https://www.cs.upc.edu/~padro/CL/practica/project.html" accesskey="U">Lab Project of Compilers - FIB UPC, 2019</a> »</li> 
+      </ul>
+    </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html" title="previous chapter">SymbolTable</a></p>
+  <h4>Next topic</h4>
+  <p class="topless"><a href="https://www.cs.upc.edu/~padro/CL/practica/modules/code.html" title="next chapter">Code Manager</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="https://www.cs.upc.edu/~padro/CL/practica/_sources/modules/decoration.rst.txt" rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../search.html" method="get">
+      <input type="text" name="q">
+      <input type="submit" value="Go">
+      <input type="hidden" name="check_keywords" value="yes">
+      <input type="hidden" name="area" value="default">
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="tree-decoration">
+<h1>Tree Decoration<a class="headerlink" href="#tree-decoration" title="Permalink to this headline">¶</a></h1>
+<p>When traversing the tree for type checking, we may need to store information about a node
+in the tree that will be used later, either in type cheking, or in code generation.</p>
+<p>Associating information to certaing nodes in the parse tree is called <em>decorating</em> the tree.</p>
+<p>For example, an aritmethic expression (e.g. a sum) will have a type that will depend on the
+type of its operands (that may be other expressions, and in turn depend on the type of their
+operands…). Since expressions are not symbols, their type is not stored in the Symbol Table.
+Thus, when we climb the tree, we need to compute the type for each subexpression to allow
+nodes higher in the tree perform the checks they may need.</p>
+<p>Class <code class="docutils literal notranslate"><span class="pre">TreeDecoration</span></code> stores information associated to tree nodes, and offers methods
+to retrieve it.
+Information that our compiler will need to keep about nodes is:</p>
+<blockquote>
+<div><ul class="simple">
+<li>The type of the node (e.g. for nodes corresponding to expressions).</li>
+<li>Whether the node is an l-value (e.g. it is at the left-hand side of an assignment).</li>
+<li>The scope to which the node belongs.</li>
+</ul>
+</div></blockquote>
+<p>(note than not all nodes will be decorated with all this information. Some node will not
+be decorated at all)</p>
+<p>Nodes are represented as <code class="docutils literal notranslate"><span class="pre">antlr4::ParserRuleContext</span> <span class="pre">*</span></code>, that is, pointers to nodes in the ParseTree
+built by ANTLR using our grammar rules.</p>
+<div class="highlight-c++ notranslate"><table class="highlighttable"><tbody><tr><td class="linenos"><div class="linenodiv"><pre> 1
+ 2
+ 3
+ 4
+ 5
+ 6
+ 7
+ 8
+ 9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48</pre></div></td><td class="code"><div class="highlight"><pre><span></span><span class="c1">//////////////////////////////////////////////////////////////////////</span>
+<span class="c1">// Class TreeDecoration: the nodes of the parser tree generated</span>
+<span class="c1">// by the antlr4 parser, whose base type is</span>
+<span class="c1">// antlr4::ParserRuleContext *, can have different attributes.</span>
+<span class="c1">// TreeDecoration groups all of them, and uses different</span>
+<span class="c1">// ParseTreeProperty to save this information.</span>
+<span class="c1">// Currently six kinds of attributes may be present:</span>
+<span class="c1">//   - scope, for nodes like the program, or functions</span>
+<span class="c1">//   - type, for expressions or type especification</span>
+<span class="c1">//   - isLValue, for expressions</span>
+<span class="c1">//   - addr, for expressions</span>
+<span class="c1">//   - offset, for expressions</span>
+<span class="c1">//   - code, for practicaly any node</span>
+<span class="c1">// Different listeners set and access these attributes:</span>
+<span class="c1">//   - SymbolsListener     [TypeCheck phase 1]</span>
+<span class="c1">//       * set and access the scope attribute</span>
+<span class="c1">//       * set and access the type attribute (in type declarations)</span>
+<span class="c1">//   - TypeCheckListener   [TypeCheck phase 2]</span>
+<span class="c1">//       * access the scope attribute</span>
+<span class="c1">//       * set and access the type attribute (in expressions)</span>
+<span class="c1">//       * set and access the isLValue attribute (in expressions)</span>
+<span class="c1">//   - CodeGenListener     [Code Generation]</span>
+<span class="c1">//       * access the scope attribute</span>
+<span class="c1">//       * access the type attribute</span>
+<span class="c1">//       * set and access the addr, offset and code attributes</span>
+
+<span class="k">class</span> <span class="nc">TreeDecoration</span> <span class="p">{</span>
+
+<span class="k">public</span><span class="o">:</span>
+  <span class="n">TreeDecoration</span><span class="p">()</span> <span class="o">=</span> <span class="k">default</span><span class="p">;</span>
+
+  <span class="c1">// Getters:</span>
+  <span class="n">SymTable</span><span class="o">::</span><span class="n">ScopeId</span> <span class="n">getScope</span>    <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+  <span class="n">TypesMgr</span><span class="o">::</span><span class="n">TypeId</span>  <span class="n">getType</span>     <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+  <span class="kt">bool</span>              <span class="nf">getIsLValue</span> <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span>       <span class="n">getAddr</span>     <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+  <span class="n">std</span><span class="o">::</span><span class="n">string</span>       <span class="n">getOffset</span>   <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+  <span class="n">instructionList</span>   <span class="nf">getCode</span>     <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">);</span>
+
+  <span class="c1">// Setters:</span>
+  <span class="kt">void</span> <span class="nf">putScope</span>    <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">SymTable</span><span class="o">::</span><span class="n">ScopeId</span> <span class="n">s</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">putType</span>     <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">TypesMgr</span><span class="o">::</span><span class="n">TypeId</span> <span class="n">t</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">putIsLValue</span> <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="kt">bool</span> <span class="n">b</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">putAddr</span>     <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">a</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">putOffset</span>   <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span> <span class="n">o</span><span class="p">);</span>
+  <span class="kt">void</span> <span class="nf">putCode</span>     <span class="p">(</span><span class="n">antlr4</span><span class="o">::</span><span class="n">ParserRuleContext</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="n">instructionList</span> <span class="o">&amp;</span> <span class="n">c</span><span class="p">);</span>
+
+<span class="p">};</span>  <span class="c1">// class TreeDecoration</span>
+</pre></div>
+</td></tr></tbody></table></div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/genindex.html" title="General Index">index</a></li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/code.html" title="Code Manager">next</a> |</li>
+        <li class="right">
+          <a href="https://www.cs.upc.edu/~padro/CL/practica/modules/symboltable.html" title="SymbolTable">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="https://www.cs.upc.edu/~padro/CL/practica/index.html">CL Lab Project 2019 documentation</a> »</li>
+          <li class="nav-item nav-item-1"><a href="https://www.cs.upc.edu/~padro/CL/practica/project.html">Lab Project of Compilers - FIB UPC, 2019</a> »</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        © Copyright 2018-2022, Compilers. FIB, UPC..
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.7.0.
+    </div>
+  
+</body></html>
