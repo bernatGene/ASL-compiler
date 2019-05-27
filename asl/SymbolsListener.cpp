@@ -154,40 +154,53 @@ void SymbolsListener::exitVariable_decl(AslParser::Variable_declContext *ctx) {
   DEBUG_EXIT();
 }
 
+void SymbolsListener::enterBasictype(AslParser::BasictypeContext *ctx) {
+  DEBUG_ENTER();
+}
+
+void SymbolsListener::exitBasictype(AslParser::BasictypeContext *ctx) {
+  if (ctx->INT()) {
+    TypesMgr::TypeId t = Types.createIntegerTy();
+    putTypeDecor(ctx, t);
+  }
+  else if (ctx->BOOL()) {
+    TypesMgr::TypeId t = Types.createBooleanTy();
+    putTypeDecor(ctx, t);
+  }
+  else if (ctx->FLOAT()) {
+    TypesMgr::TypeId t = Types.createFloatTy();
+    putTypeDecor(ctx, t);
+  }
+  else if (ctx->CHAR()) {
+    TypesMgr::TypeId t = Types.createCharacterTy();
+    putTypeDecor(ctx, t);
+  }
+  DEBUG_EXIT();
+}
+
 void SymbolsListener::enterType(AslParser::TypeContext *ctx) {
   DEBUG_ENTER();
 }
 void SymbolsListener::exitType(AslParser::TypeContext *ctx) {
   
   if (ctx->array()) {
-    TypesMgr::TypeId te;
-    if (ctx->array()->basictype()->INT()) te = Types.createIntegerTy();
-    if (ctx->array()->basictype()->BOOL()) te = Types.createBooleanTy();
-    if (ctx->array()->basictype()->FLOAT()) te = Types.createFloatTy();
-    if (ctx->array()->basictype()->CHAR()) te = Types.createCharacterTy();  
+    TypesMgr::TypeId te = getTypeDecor(ctx->array()->basictype());
     int size = std::stoi(ctx->array()->INTVAL()->getText());
     TypesMgr::TypeId t = Types.createArrayTy(size, te);
     putTypeDecor(ctx, t);
   }
+  /*else if (ctx->pair()) {
+    TypesMgr::TypeId tfirst = getTypeDecor(ctx->pair()->basictype(0));
+    TypesMgr::TypeId tsecond = getTypeDecor(ctx->pair()->basictype(1));
+    TypesMgr::TypeId tpair = Types.createPairTy(tfirst, tsecond);
+    //std::cout<<"Creating Pair"<<Types.to_string(tfirst)<<Types.to_string(tsecond)<<Types.to_string(tpair)<<std::endl;
+    putTypeDecor(ctx, tpair);
+  }*/
+  else {
+    putTypeDecor(ctx, getTypeDecor(ctx->basictype()));
+  }
 
-  else if (ctx->basictype()->INT()) {
-    TypesMgr::TypeId t = Types.createIntegerTy();
-    putTypeDecor(ctx, t);
-  }
-  else if (ctx->basictype()->BOOL()) {
-    TypesMgr::TypeId t = Types.createBooleanTy();
-    putTypeDecor(ctx, t);
-  }
-  else if (ctx->basictype()->FLOAT()) {
-    TypesMgr::TypeId t = Types.createFloatTy();
-    putTypeDecor(ctx, t);
-  }
-  else if (ctx->basictype()->CHAR()) {
-    TypesMgr::TypeId t = Types.createCharacterTy();
-    putTypeDecor(ctx, t);
-  }
   
-  DEBUG_EXIT();
 }
 
 void SymbolsListener::enterStatements(AslParser::StatementsContext *ctx) {

@@ -137,6 +137,12 @@ public:
   void enterArray_access(AslParser::Array_accessContext *ctx);
   void exitArray_access(AslParser::Array_accessContext *ctx);
 
+/*  void enterExprPAccess(AslParser::ExprPAccessContext *ctx);
+  void exitExprPAccess(AslParser::ExprPAccessContext *ctx);
+
+  void enterPair_access(AslParser::Pair_accessContext *ctx);
+  void exitPair_access(AslParser::Pair_accessContext *ctx); */
+
   void enterIdent(AslParser::IdentContext *ctx);
   void exitIdent(AslParser::IdentContext *ctx);
 

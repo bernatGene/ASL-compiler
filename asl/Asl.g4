@@ -56,7 +56,8 @@ variable_decl
 type    
 		: basictype 
 		| array
-    ;
+        //| pair
+        ;
 
 basictype
 		: INT
@@ -68,6 +69,10 @@ basictype
 array
 		: ARRAY '[' INTVAL ']' OF basictype 
 		;
+
+/*pair
+    : PAIR basictype ',' basictype ENDPAIR
+    ;*/
 
 funcall 
 		: ident '(' call_parameters? ')'
@@ -105,6 +110,7 @@ statement
 left_expr
         : ident
         | array_access 
+//        | pair_access
         ;
 
 // Grammar for expressions with boolean, relational and aritmetic operators
@@ -122,12 +128,18 @@ expr
 		| CHARVAL							                             # value
 		| ident 							                             # exprIdent
 		| array_access 						                         # exprAAccess
+    //  | pair_access                                      # exprPAccess
 		| funcall 							                           # exprFuncall
 		;
 
 array_access
 		: ident '[' expr ']'
 		;
+
+/*pair_access
+    : ident '.' FIRST
+    | ident '.' SECOND
+    ;*/
 
 ident   : ID
         ;
@@ -162,6 +174,10 @@ FLOAT	    : 'float' ;
 BOOL 	    : 'bool' ;
 CHAR	    : 'char' ;
 ARRAY     : 'array' ;
+PAIR      : 'pair' ;
+ENDPAIR   : 'endpair' ;
+FIRST     : 'first' ;
+SECOND    : 'second' ;
 OF 		    : 'of' ;
 IF        : 'if' ;
 THEN      : 'then' ;

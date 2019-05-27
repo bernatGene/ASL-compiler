@@ -75,6 +75,9 @@ public:
   void enterType(AslParser::TypeContext *ctx);
   void exitType(AslParser::TypeContext *ctx);
 
+  void enterBasictype(AslParser::BasictypeContext *ctx);
+  void exitBasictype(AslParser::BasictypeContext *ctx);
+
   void enterStatements(AslParser::StatementsContext *ctx);
   void exitStatements(AslParser::StatementsContext *ctx);
 

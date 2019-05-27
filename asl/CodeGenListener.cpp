@@ -488,7 +488,54 @@ void CodeGenListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
   instructionList code  = code1 || code2;
   std::string temp = "%"+codeCounters.newTEMP();
   TypesMgr::TypeId t  = getTypeDecor(ctx);
-  if (Types.isIntegerTy(t)) {
+  /*
+  TypesMgr::TypeId t1  = getTypeDecor(ctx->expr(0));
+  TypesMgr::TypeId t2  = getTypeDecor(ctx->expr(1));
+  if (Types.isArrayTy(t1) and Types.isArrayTy(t2)) {
+
+    
+    bool fl01, fl10, fl;
+    fl01 = (Types.isIntegerTy(t1) and Types.isFloatTy(t2));
+    fl10 = (Types.isIntegerTy(t2) and Types.isFloatTy(t1));
+    fl = (not Types.isIntegerTy(t));
+
+    int sizeI = Types.getArraySize(t1);
+    std::string iter = "%"+codeCounters.newTEMP();
+    std::string incr = "%"+codeCounters.newTEMP();
+    std::string elem = "%"+codeCounters.newTEMP();
+    std::string elem2 = "%"+codeCounters.newTEMP();
+    std::string resu = "%"+codeCounters.newTEMP();
+    std::string size = "%"+codeCounters.newTEMP();
+    std::string label = codeCounters.newLabelWHILE();
+    std::string labelDo = "doDotP"+label;
+    std::string labelEn = "enDotP"+label;
+    instructionList float01 = instruction::FLOAT(elem,elem);
+    instructionList float10 = instruction::FLOAT(elem2,elem2);
+    instructionList loadEle = instruction::LOADX(elem, addr2, iter)
+                           || instruction::LOADX(elem2, addr1, iter);
+    instructionList flElemP = instruction::FMUL(temp, elem, elem2)
+                           || instruction::FADD(resu, resu, temp);
+    instructionList inElemP = instruction::MUL(temp, elem, elem2)
+                           || instruction::ADD(resu, resu, temp);
+    instructionList iterCheck = instruction::LT(temp, iter, size) 
+                             || instruction::FJUMP(temp, labelEn);
+    instructionList iterIncre = instruction::ADD(iter, iter, incr);
+    code = code || instruction::ILOAD(iter, "0")
+                || instruction::ILOAD(resu, "0")
+                || instruction::ILOAD(incr, "1") 
+                || instruction::ILOAD(size, std::to_string(sizeI));
+    if (fl) code || instruction::FLOAT(resu,resu);
+    code = code || instruction::LABEL(labelDo);
+    code = code || iterCheck || loadEle;
+    if (fl01) code = code || float01;
+    if (fl10) code = code || float10;
+    if (fl) code  = code || flElemP;
+    else code = code || inElemP;
+    code = code || iterIncre;
+    code = code || instruction::UJUMP(labelDo) || instruction::LABEL(labelEn);
+    code = code || instruction::LOAD(temp, resu);
+  }
+  else */ if (Types.isIntegerTy(t)) {
     if (ctx->MUL()) {
       code = code || instruction::MUL(temp, addr1, addr2);
     }

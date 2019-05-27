@@ -218,6 +218,10 @@ void TypeCheckListener::exitLeft_expr(AslParser::Left_exprContext *ctx) {
   	t1 = getTypeDecor(ctx->array_access());
   	b = getIsLValueDecor(ctx->array_access());
   }
+  /*else if (ctx->pair_access()) {
+    t1 = getTypeDecor(ctx->pair_access());
+    b = getIsLValueDecor(ctx->pair_access());
+  }*/
   else {
   	t1 = getTypeDecor(ctx->ident());
   	b = getIsLValueDecor(ctx->ident());
@@ -254,17 +258,38 @@ void TypeCheckListener::exitArithmetic(AslParser::ArithmeticContext *ctx) {
   TypesMgr::TypeId t1 = getTypeDecor(ctx->expr(0));
   TypesMgr::TypeId t2 = getTypeDecor(ctx->expr(1));
   bool incompatible = false;
-  if ((not Types.isErrorTy(t1)) and (not Types.isNumericTy(t1)))
+  bool dotpf = false;
+  if (not Types.isNumericTy(t1) or not Types.isNumericTy(t2))
     incompatible = true;
-  if ((not Types.isErrorTy(t2)) and (not Types.isNumericTy(t2)))
+  if (ctx->MOD() and ((not Types.isIntegerTy(t1)) or (not Types.isIntegerTy(t2))))
     incompatible = true;
-  if (ctx->MOD() and (((not Types.isErrorTy(t1)) and (not Types.isIntegerTy(t1))) or
-                     ((not Types.isErrorTy(t2)) and (not Types.isIntegerTy(t2)))))
-    incompatible = true;
+  /*if(ctx->MUL() and (Types.isArrayTy(t1) or Types.isArrayTy(t2))) {
+    int s1, s2;
+    TypesMgr::TypeId t1e, t2e;
+    if (Types.isArrayTy(t1)) {
+      s1 = Types.getArraySize(t1);
+      t1e = Types.getArrayElemType(t1);
+    }
+    if (Types.isArrayTy(t2)) {
+      s2 = Types.getArraySize(t2);
+      t2e = Types.getArrayElemType(t2); 
+    }    
+    if (s1 == s2 and Types.isIntegerTy(t1e) and Types.isIntegerTy(t2e)) {
+      incompatible = false;
+    }
+    else if (s1 == s2 and Types.isFloatTy(t1e) and Types.isFloatTy(t2e)) {
+      incompatible = false;
+      dotpf = true;
+    }
+    else if ((Types.isFloatTy(t1) and Types.isErrorTy(t2)) or  
+             (Types.isFloatTy(t2) and Types.isErrorTy(t1))) dotpf = true;
+    else incompatible = true;
+  }*/
+  if (Types.isErrorTy(t1) or Types.isErrorTy(t2)) incompatible = false;
   if (incompatible)
     Errors.incompatibleOperator(ctx->op);
   TypesMgr::TypeId t; 
-  if (Types.isFloatTy(t1) or (Types.isFloatTy(t2)))
+  if (Types.isFloatTy(t1) or (Types.isFloatTy(t2)) or dotpf)
     t = Types.createFloatTy();
   else
     t = Types.createIntegerTy();
@@ -357,6 +382,17 @@ void TypeCheckListener::exitExprAAccess(AslParser::ExprAAccessContext *ctx){
   DEBUG_EXIT();
 }
 
+/*void TypeCheckListener::enterExprPAccess(AslParser::ExprPAccessContext *ctx){
+  DEBUG_ENTER();
+}
+
+void TypeCheckListener::exitExprPAccess(AslParser::ExprPAccessContext *ctx){
+  TypesMgr::TypeId t1 = getTypeDecor(ctx->pair_access());
+  putTypeDecor(ctx, t1);
+  bool b = getIsLValueDecor(ctx->pair_access());
+  putIsLValueDecor(ctx, b);
+  DEBUG_EXIT();
+}*/
 
 void TypeCheckListener::enterArray_access(AslParser::Array_accessContext *ctx){
   DEBUG_ENTER();
@@ -378,6 +414,30 @@ void TypeCheckListener::exitArray_access(AslParser::Array_accessContext *ctx){
   putIsLValueDecor(ctx, getIsLValueDecor(ctx->ident()));
   DEBUG_EXIT();
 }
+
+/*void TypeCheckListener::enterPair_access(AslParser::Pair_accessContext *ctx){
+  DEBUG_ENTER();
+}
+
+void TypeCheckListener::exitPair_access(AslParser::Pair_accessContext *ctx){
+  TypesMgr::TypeId t = getTypeDecor(ctx->ident());
+  TypesMgr::TypeId tr;
+  if (ctx->FIRST()) {
+    tr = Types.getFirstPairType(t);
+    DEBUG("FIRST access " + Types.to_string(tr));
+  }
+  else{
+    tr = Types.getSecondPairType(t); 
+    DEBUG("SECOND access " + Types.to_string(tr));
+  } 
+  if (not Types.isPairTy(t)) {
+    if (not Types.isErrorTy(t)) Errors.nonPairInPairAccess(ctx);
+    tr = Types.createErrorTy();
+  }
+  putTypeDecor(ctx, tr);
+  putIsLValueDecor(ctx, getIsLValueDecor(ctx->ident()));
+  DEBUG_EXIT();
+}*/
 
 void TypeCheckListener::enterFuncall(AslParser::FuncallContext *ctx) {
   DEBUG_ENTER();
